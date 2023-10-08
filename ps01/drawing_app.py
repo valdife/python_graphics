@@ -11,8 +11,8 @@ class DrawingApp(Frame):
 
     def initUI(self) -> None:
         # create all of the first layer containers
-        canvas_frame = Frame(self.root, bg='cyan', width=800, height=425, pady=3)
-        interface_frame = Frame(self.root, bg='red', width=800, height=275, padx=3, pady=3)
+        canvas_frame = Frame(self.root, bg='white', width=800, height=425, pady=3)
+        interface_frame = Frame(self.root, width=800, height=275, padx=3, pady=3)
 
         # layout all of the first layer containers
         self.root.grid_rowconfigure(1, weight=1)
@@ -22,9 +22,9 @@ class DrawingApp(Frame):
         interface_frame.grid(row=1, sticky="nsew")
 
         # create the containers for the second layer in the interface frame
-        left_frame = Frame(interface_frame, bg='blue', width=100, height=275, pady=3)
-        center_frame = Frame(interface_frame, bg='yellow', width=500, height=275, padx=3, pady=3)
-        right_frame = Frame(interface_frame, bg='green', width=200, height=275, padx=3, pady=3)
+        left_frame = Frame(interface_frame, width=100, height=275, pady=3)
+        center_frame = Frame(interface_frame, width=500, height=275, padx=3, pady=3)
+        right_frame = Frame(interface_frame, width=200, height=275, padx=3, pady=3)
 
         # layout the widgets in the interface_frame
         interface_frame.grid_rowconfigure(0, weight=1)
