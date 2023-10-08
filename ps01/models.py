@@ -14,7 +14,7 @@ class Point:
 class Shape:
     def __init__(self, shape: str, point1: Point, point2: Point):
         self.points = [point1, point2]
-        self.shape = None
+        self.shape = shape
         self.id = None
 
     def draw(self, canvas: Canvas): ...
@@ -76,7 +76,7 @@ class Circle(Shape):
         return self.points[0].distance_to(point) <= self.radius
 
     def serialize(self) -> dict:
-        return super().serialize(self.points) | {'radius': self.radius}
+        return super().serialize() | {'radius': self.radius}
 
 class Rectangle(Shape):
     def __init__(self, point1: Point, point2: Point):
