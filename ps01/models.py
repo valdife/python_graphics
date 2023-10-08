@@ -14,30 +14,32 @@ class Point:
 class Shape:
     def __init__(self, shape: str, point1: Point, point2: Point):
         self.points = [point1, point2]
-        self.shape = None
+        self.shape = shape
         self.id = None
 
-    def draw(self): ...
+    def draw(self, canvas: Canvas): ...
 
     def update(self): ...
 
-    def serialize(self, points: list[Point]) -> dict:
+    def serialize(self) -> dict:
         return {
             'type': self.shape,
             'points': [
                 {
                     'x': point.x,
                     'y': point.y
-                } for point in points
+                } for point in self.points
             ]
         }
 
-    def deserialize(self, json_data: dict) -> None:
+    def deserialize(self, json_data: dict, canvas: Canvas) -> None:
         try:
             self.shape = json_data['type']
             self.points = [Point(point['x'], point['y']) for point in json_data['points']]
+            self.draw(canvas=canvas)
         except KeyError:
             raise ValueError("Invalid JSON data")
+
 
     def is_point_part_of_shape(self, point: Point) -> bool: ...
 
@@ -72,6 +74,9 @@ class Circle(Shape):
 
     def is_point_part_of_shape(self, point: Point) -> bool:
         return self.points[0].distance_to(point) <= self.radius
+
+    def serialize(self) -> dict:
+        return super().serialize() | {'radius': self.radius}
 
 class Rectangle(Shape):
     def __init__(self, point1: Point, point2: Point):
