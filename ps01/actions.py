@@ -53,7 +53,12 @@ def deserialize_from_dict(canvas: Canvas, object_data: dict) -> None:
     try:
         shape = object_data['type']
         shape_object = SHAPES[shape.lower()]
-        shape_object = shape_object()
+        if shape_object == Circle:
+            point = Point(object_data['points'][0]['x'], object_data['points'][0]['y'])
+            radius = object_data['radius']
+            shape_object = shape_object(point=point, radius=radius)
+        else:
+            shape_object = shape_object(Point(0, 0), Point(0, 0))
         shape_object.deserialize(json_data=object_data, canvas=canvas)
     except KeyError:
         raise ValueError("Invalid JSON data")
