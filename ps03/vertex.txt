@@ -1,0 +1,17 @@
+#version 330 core // Specify the GLSL version for this shader.
+
+layout (location=0) in vec3 vertexPos; // Define the input variable for vertex positions at location 0.
+layout (location=1) in vec3 vertexColor; // Define the input variable for vertex colors at location 1.
+
+uniform mat4 model; // Define a uniform matrix for the model transformation.
+uniform mat4 projection; // Define a uniform matrix for the projection transformation.
+
+out vec3 fragmentColor; // Define an output variable for fragment (pixel) colors.
+
+void main(){
+    // Transform the vertex position to clip space by applying projection and model matrices.
+    gl_Position = projection * model * vec4(vertexPos, 1.0);
+
+    // Pass the vertex color to the fragment shader.
+    fragmentColor = vertexColor;
+}
