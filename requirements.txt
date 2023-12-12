@@ -1,0 +1,8 @@
+
+numpy
+matplotlib
+pyqtgraph
+pygame
+PyOpenGL
+PyOpenGL_accelerate
+pyrr

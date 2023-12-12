@@ -6,8 +6,6 @@ import numpy as np
 import cv2
 from functools import partial
 import time
-import os
-import random
 from scipy.signal import convolve2d
 
 class MyWindow(QMainWindow):
@@ -25,7 +23,7 @@ class MyWindow(QMainWindow):
         self.menu_container = QWidget(self)
         self.menu_container.setFixedWidth(200)
         self.menu_container.setStyleSheet("background-color: lightgray")
-        
+
         menu_layout = QGridLayout(self.menu_container)
         menu_layout.setContentsMargins(20, 20, 20, 20)
         menu_layout.setSpacing(10)
@@ -40,7 +38,7 @@ class MyWindow(QMainWindow):
         refresh_image_button.clicked.connect(self.reload_image_fresh)
         refresh_image_button
         menu_layout.addWidget(refresh_image_button,1,0)
-        
+
 
         # * RGB input fields
         rgb_widget = QWidget()
@@ -66,7 +64,7 @@ class MyWindow(QMainWindow):
         self.blue_text.setValidator(QDoubleValidator(self))
         self.blue_text.setText("0")
 
-        
+
         rgb_layout.addWidget(self.red_text,0,0)
         rgb_layout.addWidget(self.green_text,0,1)
         rgb_layout.addWidget(self.blue_text,0,2)
@@ -167,7 +165,7 @@ class MyWindow(QMainWindow):
             file_path, _ = QFileDialog.getOpenFileName(
                 self, "Open Image File", "", "Image Files (*.ppm *.jpeg *.jpg);;All Files (*)", options=options)
             self.original_file_path = file_path
-    
+
         if file_path:
             # Load the image using OpenCV
             self.image = cv2.imread(self.original_file_path)
@@ -210,7 +208,7 @@ class MyWindow(QMainWindow):
         else:
             print("No image selected.")
 
-            
+
     def reload_image_fresh(self):
         # Reload the original image
         self.load_image(self.original_file_path)
@@ -269,7 +267,7 @@ class MyWindow(QMainWindow):
         self.q_image = QImage(img_data.data, width, height, bytesPerLine, QImage.Format_RGB888)
 
         self.reload_image()
-                
+
     def multiply_rgb(self):
         red_input = float(self.red_text.text())
         green_input = float(self.green_text.text())
@@ -366,7 +364,7 @@ class MyWindow(QMainWindow):
             img_data[:, :, 0] = average_rgb_value
             img_data[:, :, 1] = average_rgb_value
             img_data[:, :, 2] = average_rgb_value
-        
+
         img_data = np.clip(img_data, 0, 255).astype(np.uint8)
         self.image = img_data
 
@@ -448,8 +446,8 @@ class MyWindow(QMainWindow):
 
         return filtered_image
 
-        
-    
+
+
 
     def edge_detection(self):
         self.error_label.setText("Wykonywana funkcja: Sobel Edge Detection")
@@ -599,7 +597,7 @@ if __name__ == "__main__":
 
     #     self.reload_image()
 
-    
+
     # def median(self):
     #     # Ustaw komunikat na etykiecie przed rozpoczęciem przetwarzania
     #     self.error_label.setText("Wykonywana funkcja: median")

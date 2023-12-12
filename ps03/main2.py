@@ -1,5 +1,4 @@
 import numpy as np
-import pygame
 import pygame as pg
 import pyrr
 from PIL import Image
@@ -43,7 +42,7 @@ class App:
         glEnable(GL_DEPTH_TEST)
         self.shader = self.create_shader('vertex.txt', 'fragment.txt')
         glUseProgram(self.shader)
-        
+
         self.cube_mesh = CubeMesh()
         self.cube = Cube(
             position=[0, 0, -3],
@@ -170,7 +169,7 @@ class CubeMesh:
             0.5, -0.5, -0.5, 0, 1, 1,  # green blue
             0.5, 0.5, -0.5, 1, 1, 1,  # white
 
-            0.5, 0.5, -0.5, 1, 1, 1,  # white   
+            0.5, 0.5, -0.5, 1, 1, 1,  # white
             -0.5, 0.5, -0.5, 1, 1, 0,  # green red
             -0.5, -0.5, -0.5, 0, 1, 0,  # green
 
@@ -239,7 +238,7 @@ class CubeMesh:
             vertices = self.verticies[i:i + 18]
             faces.append(vertices)
         return faces
-    
+
     # Method to calculate the intersection of a ray with a face
     def intersect_ray_with_face(self, ray_start, ray_end, face):
         # Extract face vertices
