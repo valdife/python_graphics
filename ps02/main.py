@@ -3,9 +3,10 @@ from PIL import Image
 from PyQt5.QtWidgets import QMainWindow, QWidget, QHBoxLayout, QLabel, QScrollArea, QVBoxLayout, QTextEdit, QPushButton, QSlider, QSplitter, QFileDialog, QDesktopWidget, QApplication
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QImage, QPixmap
+
+
 header = {}
 pixels = []
-
 
 
 def load_header(f):
