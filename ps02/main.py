@@ -1,34 +1,15 @@
-import time
-from PIL import Image
-from PyQt5.QtWidgets import QApplication, QDesktopWidget, QSlider, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QSplitter, QScrollArea, QTextEdit, QFileDialog
-from PyQt5.QtGui import QImage, QPixmap
-from PyQt5.QtCore import Qt
 import sys
+from PIL import Image
+from PyQt5.QtWidgets import QMainWindow, QWidget, QHBoxLayout, QLabel, QScrollArea, QVBoxLayout, QTextEdit, QPushButton, QSlider, QSplitter, QFileDialog, QDesktopWidget, QApplication
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QImage, QPixmap
 header = {}
 pixels = []
 
-# * Wrapper to calculate function run time
-
-
-def timeme(method):
-    def wrapper(*args, **kw):
-        startTime = time.time()
-        result = method(*args, **kw)
-        endTime = time.time()
-        file_path = args[0]
-
-        execution_time = endTime - startTime
-        print(
-            f"{method.__name__} took {execution_time:.6f} seconds for file {file_path}\n")
-        return result
-
-    return wrapper
-
-# * Function to read header from file
 
 
 def load_header(f):
-    global pixel
+    global pixels
     values = []
     read_lines = 0
     header = {
@@ -63,20 +44,17 @@ def load_header(f):
         except ValueError:
             raise ValueError("Invalid pixel value")
 
-    return header, read_lines,
+    return header, read_lines
 
-# * Function to load PPM image
-
-
-@timeme
+# Function to load PPM image
 def load_ppm_image(file_path):
     global header, pixels
     with open(file_path, 'rb') as f:
         header, read_lines = load_header(f)
-        # * Error if header didn't find P3 or P6
+        # Error if header didn't find P3 or P6
         if header['magic_number'] != 'P3' and header['magic_number'] != 'P6':
             raise Exception("Invalid magic number")
-        # * Loading whole P3 file to memory, and then going line by line through it
+        # Loading whole P3 file to memory, and then going line by line through it
         if header['magic_number'] == 'P3':
             print(f'Loading P3 file {file_path}')
             file_content = f.read().decode('latin-1')
@@ -86,7 +64,7 @@ def load_ppm_image(file_path):
             ) if word and not word.startswith("#") and word.isdigit()]
 
             pixels = pixels + new_pixels
-        # * Loading the binary pixel data from the P6 file at once and extending the 'pixels' list with the pixel values
+        # Loading the binary pixel data from the P6 file at once and extending the 'pixels' list with the pixel values
         elif header['magic_number'] == 'P6':
             print(f'Loading P6 file {file_path}')
             f.seek(read_lines)
@@ -94,7 +72,7 @@ def load_ppm_image(file_path):
                 f.readline()
             pixel_values = list(f.read())
             pixels.extend(pixel_values)
-    # * Error if pixel count is not correct
+    # Error if pixel count is not correct
     if len(pixels) != header['width'] * header['height'] * 3:
         raise Exception(
             f"Invalid pixel count.\nExpected {header['width'] * header['height'] * 3} pixels\nLoaded {len(pixels)} pixels")
@@ -102,10 +80,7 @@ def load_ppm_image(file_path):
         print(
             f'Pixels for {file_path} successfully loaded.\n{len(pixels)} pixels loaded.')
 
-# * Function to load JPEG image
-
-
-@timeme
+# Function to load JPEG image
 def load_jpeg_image(file_path):
     global header, pixels
     try:
@@ -118,7 +93,7 @@ def load_jpeg_image(file_path):
 
         header['width'], header['height'] = im.size
         header['max_color_value'] = 255
-        # * Putting jpg images in pixel array
+        # Putting jpg images in pixel array
         pixels.clear()
         pixels.extend(im.tobytes())
         print(
@@ -127,7 +102,7 @@ def load_jpeg_image(file_path):
         print(f"Error loading JPEG file {file_path}: {e}")
 
 
-# * Gui class
+# Gui class
 class ImageDisplayWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -138,54 +113,54 @@ class ImageDisplayWindow(QMainWindow):
         self.scale_factor = 1.0
         self.pan_start = None
 
-        # * Create the central widget
+        # Create the central widget
         central_widget = QWidget(self)
         layout = QHBoxLayout(central_widget)
 
-        # * Create and configure the image label
+        # Create and configure the image label
         self.image_label = QLabel()
         self.image_label.setAlignment(Qt.AlignTop | Qt.AlignLeft)
 
-        # * Create a scroll area to display the image label
+        # Create a scroll area to display the image label
         scroll_area = QScrollArea(self)
         scroll_area.setWidgetResizable(True)
         scroll_area.setWidget(self.image_label)
         scroll_area.setMouseTracking(True)
 
-        # * Create the right menu widget
+        # Create the right menu widget
         right_menu = QWidget(self)
         right_menu_layout = QVBoxLayout(right_menu)
         right_menu_layout.setContentsMargins(20, 20, 20, 20)
 
-        # * Create and configure the text edit for displaying RGB values
+        # Create and configure the text edit for displaying RGB values
         self.text_edit = QTextEdit()
         self.text_edit.setFixedWidth(150)
         self.text_edit.setFixedHeight(26)
 
-        # * Create a layout for buttons
+        # Create a layout for buttons
         button_layout = QVBoxLayout()
 
-        # * Create zoom buttons
+        # Create zoom buttons
         zoom_in_button = QPushButton("Zoom In")
         zoom_out_button = QPushButton("Zoom Out")
         load_image_button = QPushButton("Load Image")
 
-        # * Connect button signals to their respective functions
+        # Connect button signals to their respective functions
         zoom_in_button.clicked.connect(self.zoomIn)
         zoom_out_button.clicked.connect(self.zoomOut)
         load_image_button.clicked.connect(self.loadImage)
 
-        # * Add buttons to the button layout
+        # Add buttons to the button layout
         button_layout.addWidget(zoom_in_button)
         button_layout.addWidget(zoom_out_button)
         button_layout.addWidget(load_image_button)
 
-        # * Create and configure the text edit for compression quality
+        # Create and configure the text edit for compression quality
         self.export_quality_text = QTextEdit()
         self.export_quality_text.setFixedWidth(150)
         self.export_quality_text.setFixedHeight(26)
 
-        # * Create a compression slider
+        # Create a compression slider
         quality_slider = QSlider(Qt.Horizontal)
         quality_slider.setRange(0, 100)
         quality_slider.setValue(90)
@@ -193,59 +168,58 @@ class ImageDisplayWindow(QMainWindow):
         quality_slider.setTickPosition(QSlider.TicksAbove)
         quality_slider.valueChanged.connect(self.updateExportQuality)
 
-        # * Create the export button
+        # Create the export button
         export_button = QPushButton("Export as JPEG")
         export_button.clicked.connect(self.exportAsJPEG)
 
-        # * Create a layout for compression-related widgets
+        # Create a layout for compression-related widgets
         compression_layout = QVBoxLayout()
         compression_layout.addWidget(self.export_quality_text)
         compression_layout.addWidget(quality_slider)
         compression_layout.addWidget(export_button)
 
-        # * Add widgets and layouts to the right menu
+        # Add widgets and layouts to the right menu
         right_menu_layout.addWidget(self.text_edit)
         right_menu_layout.addLayout(button_layout)
         right_menu_layout.addLayout(compression_layout)
 
-        # * Set the background color for the right menu
+        # Set the background color for the right menu
         right_menu.setStyleSheet("background-color: lightgray;")
 
-        # * Create a splitter to separate the image and the right menu
+        # Create a splitter to separate the image and the right menu
         splitter = QSplitter(Qt.Horizontal)
         splitter.addWidget(scroll_area)
         splitter.addWidget(right_menu)
         splitter.setSizes([1920, 150])
 
-        # * Add the splitter to the main layout
+        # Add the splitter to the main layout
         layout.addWidget(splitter)
 
-        # * Set the central widget and configure the window
+        # Set the central widget and configure the window
         self.setCentralWidget(central_widget)
         self.setGeometry(
             0, 0, 1920, QDesktopWidget().availableGeometry().height())
         self.show()
 
-        # * Initialize instance variables
+        # Initialize instance variables
         self.image = None
         self.export_quality = 90
         self.export_quality_text.setPlainText(
             f"Quality: {self.export_quality}%")
 
-    # * Function for linear scaling of a picture
-
+    # Function for linear scaling of a picture
     def linearScaling(self):
         maxValue = max(pixels)
         for i in range(len(pixels)):
             pixels[i] = int(pixels[i] * (255/maxValue))
 
-    # * Update export quality text
+    # Update export quality text
     def updateExportQuality(self, value):
         self.export_quality = value
         self.export_quality_text.setPlainText(
             f"Quality: {self.export_quality}%")
 
-    # * Export file as jpg
+    # Export file as jpg
     def exportAsJPEG(self):
         if self.image is not None:
             options = QFileDialog.Options()
@@ -254,14 +228,14 @@ class ImageDisplayWindow(QMainWindow):
             if file_path:
                 self.image.save(file_path, quality=self.export_quality)
 
-    # * Creates QImage object
+    # Creates QImage object
     def createImage(self):
         width = header['width']
         height = header['height']
         format = QImage.Format_RGB888
         self.image = QImage(bytes(pixels), width, height, width * 3, format)
 
-    # * Updates the image
+    # Updates the image
     def updateImage(self):
         if self.image:
             if not self.loaded:
@@ -279,25 +253,23 @@ class ImageDisplayWindow(QMainWindow):
             pixmap = QPixmap.fromImage(scaled_image)
             self.image_label.setPixmap(pixmap)
 
-    # * Zoomies in
-
+    # Zoomies in
     def zoomIn(self):
         if hasattr(self, 'image') and self.image:
             self.scale_factor *= 1.1
             self.updateImage()
 
-    # *Zoomies out
-
+    # Zoomies out
     def zoomOut(self):
         if hasattr(self, 'image') and self.image:
             self.scale_factor /= 1.1
             self.updateImage()
 
-
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
             self.pan_start = event.pos()
-    # * Pans the image and displays
+
+    # Pans the image and displays
     def mouseMoveEvent(self, event):
         if hasattr(self, 'image') and self.image:
             if self.pan_start:
